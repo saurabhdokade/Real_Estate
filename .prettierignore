@@ -1,0 +1,19 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore build directories
+dist/
+build/
+
+# Ignore any temporary files or directories
+*.log
+*.tmp
+*.swp
+
+# Ignore configuration files
+*.config.js
+*.config.json
+
+# Ignore specific files or directories
+src/someFileToIgnore.js
+src/someFolderToIgnore/

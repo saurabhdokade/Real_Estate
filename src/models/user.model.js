@@ -4,6 +4,12 @@ import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema(
     {
+        fullName:{
+            type:String,
+            required:true,
+            unique:true,
+            lowercase:true
+        },
         email: {
             type: String,
             required: true,
@@ -17,6 +23,14 @@ const userSchema = new mongoose.Schema(
             required: true,
             minlength: 6,
           },
+          number:{
+            type:Number,
+            maxlength:10,
+            required:true
+          },
+          refreshToken:{
+            type:String
+          }
     },
     {timestamps:true}
 )

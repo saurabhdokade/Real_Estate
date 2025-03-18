@@ -8,18 +8,20 @@ const registerUser = asyncHandler(async (req,res)=>{
 
     const  {fullName,email,password,number}   = req.body;
 
+    console.log("comming from req.body:",req.body);
+
     // check details is comming or not
 
     if (
       [fullName,email,password,number].some((field)=>
-        field?.trim() === ""
+        field?.trim === ""
       )
     ){
       throw new ApiError(400,"All fields are required")
     }
     // check if user already exist
 
-    const  existedUser = User.findOne({
+    const  existedUser = await User.findOne({
       $or:[{fullName},{email}]
     })
 

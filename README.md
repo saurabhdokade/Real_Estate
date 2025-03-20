@@ -1,6 +1,11 @@
-# Real_Estate
-# This is estate_project written by piyush rai 
+#       REAL STATE BACKEND PROJECT
 
-# Steps to complete this project
+# STEPS TAKEN BY TO COMPLETE THIS PROJECT
 
-1-> Connect project with database
+# Basic setupt of the project with file and folder with professional folder structure
+# now connecting project to data base mongoAtlas
+#  Setting APIERROR class and APIRESPONSE class 
+#  setup of routes and router
+#  writting controllers of register user 
+
+# Experimental feature:-  [ -r dotenv/config --experimental-json-modules ]

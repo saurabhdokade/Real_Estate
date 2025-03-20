@@ -7,24 +7,27 @@ const userSchema = new mongoose.Schema(
         fullName:{
             type:String,
             required:true,
-            unique:true,
-            lowercase:true
+            lowercase:true,
+            trim:true,
+            index:true
         },
         email: {
             type: String,
             required: true,
             unique: true,
             lowercase: true,
-            index:true
           },
           password: {
             type: String,
-            required: true,
+            required: [true,"password field id required"],
           },
           number:{
             type:Number,
             maxlength:10,
             required:true
+          },
+          coverImage:{
+            type:String // cloudinary image
           },
           refreshToken:{
             type:String

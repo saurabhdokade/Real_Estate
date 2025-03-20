@@ -3,6 +3,22 @@ import { ApiError } from "../utils/ApiError.js";
 import {User} from "../models/user.model.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 
+const generateAccessAndRefreshTokens = async(userId)=>{
+  try {
+     const user = await User.findById(userId);
+     const accessToken = user.generateAccessToken()
+     const refreshToken = user.generateRefreshToken()
+     // now we put refresh token to database
+     user.refreshToken = refreshToken;
+     await user.save({validateBeforeSave:false});
+     // now return accessToken and refreshToken
+     return {accessToken, refreshToken};
+  } catch (error) {
+      throw new ApiError(500,"Somthing went wrong while generating refresh and access token")    
+  }
+}
+
+
 const registerUser = asyncHandler(async (req,res)=>{
     // get user detail from frontend
 
@@ -114,4 +130,30 @@ const loginUser = asyncHandler(async(req,resp)=>{
 })
 
 
-export {registerUser, loginUser};
+const logoutUser = asyncHandler(async(req,res)=>{
+     
+     await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        $set:{
+          refreshToken:undefined
+        }
+      },
+      {
+        new:true
+      }
+    )
+    const options = {
+      httpOnly:true,
+      secure:true
+    }
+
+    return res
+     .status(200)
+     .clearCookie("accessToken",options)
+     .clearCookie("refreshToken",options)
+     .json(new ApiResponse(200,{},"user loged-out successfully !!!! "))
+})
+
+
+export {registerUser, loginUser,logoutUser};

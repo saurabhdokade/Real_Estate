@@ -156,4 +156,34 @@ const logoutUser = asyncHandler(async(req,res)=>{
 })
 
 
-export {registerUser, loginUser,logoutUser};
+const changeCurrentPassword = asyncHandler(async (req, resp) => {
+  
+  const { oldPassword, newPassword } = req.body;
+
+  if (!(oldPassword && newPassword)) {
+    throw new ApiError(402, "these fields are required");
+  }
+
+  const user = await User.findById(req.user?._id);
+
+  if (!user) {
+    throw new ApiError(401, "user does't exist");
+  }
+
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Invalid old password");
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return resp
+         .status(200)
+         .json(new ApiResponse(200, {}, "password is changed"));
+});
+
+
+
+export {registerUser, loginUser,logoutUser,changeCurrentPassword};

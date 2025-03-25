@@ -3,7 +3,10 @@ import { ApiError } from "../utils/ApiError.js";
 import {User} from "../models/user.model.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 
-const generateAccessAndRefreshTokens = async(userId)=>{
+
+// code for generating accessToken and refresh token
+
+const generateAccessAndRefreshToken = async(userId)=>{
   try {
      const user = await User.findById(userId);
      const accessToken = user.generateAccessToken()
@@ -18,8 +21,10 @@ const generateAccessAndRefreshTokens = async(userId)=>{
   }
 }
 
+// user register first time 
 
 const registerUser = asyncHandler(async (req,res)=>{
+
     // get user detail from frontend
 
     const  {fullName,email,password,number}   = req.body;
@@ -69,17 +74,19 @@ const registerUser = asyncHandler(async (req,res)=>{
 })
 
 
+// login user in its account
+
 const loginUser = asyncHandler(async(req,resp)=>{
      //get data from (req.body)
-  const { userName, email, password } = req.body;
+  const { fullName, email, password } = req.body;
 
   //make login on basic of username,email
-  if (!(userName || email)) {
+  if (!(fullName || email)) {
     throw new ApiError(401, "Username or email is not present");
   }
   //check user is present or not and if not send error message
   const user = await User.findOne({
-    $or: [{ userName }, { email }],
+    $or: [{ fullName }, { email }],
   });
 
   if (!user) {
@@ -130,6 +137,8 @@ const loginUser = asyncHandler(async(req,resp)=>{
 })
 
 
+// logout user from its account
+
 const logoutUser = asyncHandler(async(req,res)=>{
      
      await User.findByIdAndUpdate(
@@ -155,6 +164,7 @@ const logoutUser = asyncHandler(async(req,res)=>{
      .json(new ApiResponse(200,{},"user loged-out successfully !!!! "))
 })
 
+// change password code .....
 
 const changeCurrentPassword = asyncHandler(async (req, resp) => {
   
@@ -184,6 +194,47 @@ const changeCurrentPassword = asyncHandler(async (req, resp) => {
          .json(new ApiResponse(200, {}, "password is changed"));
 });
 
+// get current user details
+
+const getCurrentUser  = asyncHandler(async(req,resp)=>{
+  return resp.status(200)
+             .json(
+               new ApiResponse(200,req.user,"current user is fetched")
+             )
+})
 
 
-export {registerUser, loginUser,logoutUser,changeCurrentPassword};
+//.............................Update User Details(for admin only)...................................
+
+const updateAccountDetails = asyncHandler(async (req, resp) => {
+
+  const { fullName, email,number } = req.body;
+
+  if (!(fullName && email && number)) {
+    throw new ApiError(404, "Fullname or email is missing");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      fullName,
+      email,
+      number
+    },
+    {
+      new: true,
+    }
+  ).select("-password");
+
+  return resp
+    .status(200)
+    .json(new ApiResponse(200, user, "Account detail updated successfully !!!!"));
+});
+
+
+
+
+
+
+
+export {registerUser, loginUser,logoutUser, changeCurrentPassword,getCurrentUser,updateAccountDetails};
